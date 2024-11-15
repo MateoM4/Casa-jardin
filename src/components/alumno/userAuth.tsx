@@ -8,33 +8,16 @@ const withAuthUser = (WrappedComponent: React.ComponentType) => {
   const AuthenticatedComponent: React.FC = (props) => {
     const router = useRouter();
     const [loading, setLoading] = useState(true); // Estado de carga
-    const [email, setEmail] = useState<string | null>(null); // Estado para almacenar el email
-    
   
-      
     useEffect(() => {
-      const authorizeAndFetchData = async () => {
-
-        setLoading(true); // El usuario está autenticado y hemos cargado los datos
-        console.time("authorizeAndFetchData");
-        // Verificar si el usuario está autorizado
+      const authorize = async () => {
+        setLoading(true);
         await autorizarUser(router);
-        // Una vez autorizado obtengo los datos del user y seteo el email
-        const user = await fetchUserData();
-        if (user && user.email) {
-            setEmail(user.email); // Solo establecer el email si existe
-            setLoading(false); // El usuario está autenticado y hemos cargado los datos
-          } else {
-            // Redirigir a la página de login si el usuario no está logeado
-            router.replace("/start/login");
-          }
-        
-        console.timeEnd("authorizeAndFetchData");
+        setLoading(false); // El usuario está autenticado 
       };
+      authorize();
 
-      authorizeAndFetchData();
-
-      // Configurar intervalo para verificar la autenticación cada 15 minutos
+      // Configurar intervalo para verificar la autenticación cada 30 minutos
       const interval = setInterval(async () => {
         await autorizarUser(router);
       }, 1800000); // 30 minutos en milisegundos (30 * 60 * 1000)

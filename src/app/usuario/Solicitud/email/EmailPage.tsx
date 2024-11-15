@@ -8,14 +8,14 @@ import { useRouter } from "next/navigation";
 import withAuthUser from "../../../../components/alumno/userAuth";
 import { send } from "process";
 interface Datos {
+  email: string;
   setCorrecto: React.Dispatch<React.SetStateAction<boolean>>;
   correcto: boolean;
 }
 
- const EmailPage: React.FC<Datos> = ({ setCorrecto, correcto }) => {
+ const EmailPage: React.FC<Datos> = ({email, setCorrecto, correcto }) => {
  //function EmailPage({ setCorrecto, correcto }: Datos) {
   // Estados para gestionar los datos del formulario y errores
-  const [email, setEmail] = useState("");
   const [codigo, setCodigo] = useState("");
   //  const [correcto, setCorrecto] = useState(false);
 /*   const router = useRouter();
@@ -34,12 +34,13 @@ interface Datos {
 
     authorizeAndFetchData();
   }, [router]); */
-  const handleEmail = async () => {
+
+/*   const handleEmail = async () => {
     console.log("enviando Email a: ", email);
     if (email === "") return;
     await sendEmail(email);
     console.log("Email enviado");
-  }
+  } */
 
   const handleVerificarCodigo = async () => {
     const codigoGuardado = await obtenerCodigoConfirmacion(email)
@@ -53,14 +54,8 @@ interface Datos {
   }
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '2rem' }}>
-      <h1>Escriba mail para recibir el código: </h1>
-      <input
-        type="text"
-        onChange={(e) => setEmail(e.target.value)}
-        className="p-2 border rounded"
-        placeholder="Ingrese su correo"
-      />
-      <button className="bg-black text-white p-2 rounded" onClick={handleEmail}>Enviar Código</button>
+      <h1>Se enviará un código de verificación a: </h1>
+      <h1 className="font-bold"> {email} </h1>
       <h1>Verificar código:</h1>
       <input
         type="text"

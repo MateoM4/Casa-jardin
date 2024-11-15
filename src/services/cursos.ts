@@ -132,3 +132,27 @@ export async function updateCurso(id: number, data: {
         data
     })
 }
+
+//get cursos en base a la edad del usuario
+//se muestran los cursos en los que la edad del user es mayor o igual a la edad minima del curso y menor o igual a la edad maxima del curso
+//y se muestran si la fecha actual esta entre la fecha de inicio y fin del curso
+export async function getCursosByEdad(edad: number) {
+    const fechaHoy = new Date()
+    return await prisma.curso.findMany({
+        where: {
+            edadMinima: {
+                lte: edad
+            },
+            edadMaxima: {
+                gte: edad
+            },
+            fechaInicio: {
+                lte: fechaHoy
+            },
+            fechaFin: {
+                gte: fechaHoy
+            }
+        }
+    })
+}
+

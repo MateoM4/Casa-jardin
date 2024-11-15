@@ -1,12 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface Datos {
   //lo que recibe de la cuenta logeada
   datosMenor: {
     nombre: string;
     apellido: string;
-    edad: number;
     fechaNacimiento: string;
     dni: number;
     pais: string;
@@ -20,7 +19,6 @@ interface Datos {
     React.SetStateAction<{
       nombre: string;
       apellido: string;
-      edad: number;
       fechaNacimiento: string;
       dni: number;
       pais: string;
@@ -35,7 +33,9 @@ interface Datos {
 const DatosMenor: React.FC<Datos> = ({ datosMenor, setDatosMenor }) => {
   // Estado para almacenar mensajes de error
   const [errorMessage, setErrorMessage] = useState<string>("");
-
+  useEffect(() => {
+    console.log("inside datosMenor: data:", datosMenor);
+  }, []);
   return (
     <div>
       <div className="p-4">

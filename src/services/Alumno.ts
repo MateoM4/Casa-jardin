@@ -122,7 +122,7 @@ export async function authenticateUser(email: string, password: string): Promise
     if (user && await verifyPassword(password, user.password)) {
       // Crear sesión y establecer la cookie
       // La sesión expira en 30 minutos
-      const expires = new Date(Date.now() + 15 * 60 * 1000);
+      const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
       const session = await encrypt({ email: user.email, rolId: user.rolId, expires });
       cookies().set("user", session, { expires, httpOnly: true });
 

@@ -39,6 +39,9 @@ const principal: React.FC = () => {
             //const direccion = await getDireccionByIdDef(Number(user?.direccionId));
             setUsuario(user);
             setUserName(user?.nombre + " " + user?.apellido); 
+
+            // Fetch cursos
+            await getAllCursos();
         };
 
         authorizeAndFetchData();
@@ -61,10 +64,10 @@ const principal: React.FC = () => {
         //setUserName(String(usuario?.nombre));
         setCursos(talleres);
     }
-
+/* 
     useEffect(() => {
         if (cursos.length === 0) getAllCursos();
-    }, [cursos]);
+    }, [cursos]); */
 
     return (
         <main className=''>

@@ -20,6 +20,7 @@ import { addLocalidad, getLocalidadById } from '@/services/ubicacion/localidad';
 import { createAlumno_Curso } from '@/services/alumno_curso';
 import { createCursoSolicitud } from '@/services/curso_solicitud';
 import withAuthUser from "../../../../components/alumno/userAuth";
+import { calcularEdad, dateTimeToDate } from '@/helpers/fechas';
 
 const Mayores: React.FC = () => {
     //region UseState
@@ -62,12 +63,12 @@ const Mayores: React.FC = () => {
         if(!user){
             const authorizeAndFetchData = async () => {
                 // Primero verifico que el user esté logeado
-                console.log("router", router);
+                //console.log("router", router);
                 await autorizarUser(router);
                 // Una vez autorizado obtengo los datos del user y seteo el email
                 const user = await fetchUserData();
                 
-                console.log("user", user);
+                //console.log("user", user);
                 if (user) {
                     setUser(user);
                 }
@@ -95,6 +96,9 @@ const Mayores: React.FC = () => {
                 const localidad = direccion?.localidad
                 const provincia = localidad?.provincia
                 const pais = provincia?.nacionalidad
+                console.log("fecha de nacimiento ----------------------------------", user.fechaNacimiento)
+                console.log("convertir fecha de nacimiento ----------------------------------", dateTimeToDate(user.fechaNacimiento))
+                console.log("edad ----------------------------------", calcularEdad(user.fechaNacimiento))
                 setDatosAlumno({
                     nombre: user.nombre,
                     apellido: user.apellido,
@@ -241,10 +245,15 @@ const Mayores: React.FC = () => {
 
             <div id='miDiv' style={{ height: (selectedScreen < 3 ? '60vh' : 'auto') }}>
                 {selectedScreen === 0 && (
-                    <SeleccionTaller
-                        setSelectedCursosId={setSelectedCursosId}
-                        selectedCursosId={selectedCursosId}
-                    />
+                    user ? (
+                        <SeleccionTaller
+                            edad={calcularEdad(user.fechaNacimiento)}
+                            setSelectedCursosId={setSelectedCursosId}
+                            selectedCursosId={selectedCursosId}
+                        />
+                    ) : (
+                        <div>Cargando...</div>
+                    )
                 )}
 
                 {selectedScreen === 1 && (
@@ -314,7 +323,7 @@ const Mayores: React.FC = () => {
             )}
             {verificarEmail && <div className=' absolute bg-slate-100 rounded-md shadow-md px-2 left-1/2 top-1/2 tranform -translate-x-1/2 -translate-y-1/2'>
                 <button className='absolute top-2 right-2' onClick={() => setVerificarEmail(false)}>X</button>
-                <EmailPage setCorrecto={setCorrecto} correcto={correcto} />
+                <EmailPage email={user.email} setCorrecto={setCorrecto} correcto={correcto} />
             </div>}
             {error != '' && <div className="absolute top-1/2 right-1/3 transform -translate-x-1/3 -translate-y-1/4 bg-white border p-4 rounded-md shadow-md w-96">
                 <h2 className="text-lg font-bold text-red-600 mb-2">Error</h2>

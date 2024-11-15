@@ -25,7 +25,7 @@ export async function fetchUserData() {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log("User data:", data.user);
+        //console.log("User data:", data.user);
         //IMPORTANTE que se use data.user en lugar de solo data (xq asi lo trae la api)
         return data.user;
       } else {
