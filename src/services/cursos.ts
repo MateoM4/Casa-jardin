@@ -20,7 +20,8 @@ export async function createCurso(data: {
     edadMinima: number
     edadMaxima: number
     fechaInicio: Date
-    fechaFin: Date
+    fechaFin: Date,
+    imagen?: string | null
 }) {
     // antes de crear un curso se verifica si el curso ya existe en la base de datos con el nombre que se quiere crear y año
     const curso = await getCursoByNombre(data) 
@@ -29,17 +30,20 @@ export async function createCurso(data: {
         return "El talller ya existe con esos datos"
     }
     // Crear un nuevo curso con los datos que se pasan en el objeto data
-    return prisma.curso.create({
+    const createdCurso = await prisma.curso.create({
         data: {
             nombre: data.nombre,
             descripcion: data.descripcion,
+            edadMinima: Number(data.edadMinima),
             edadMaxima: Number(data.edadMaxima),
-              edadMinima: Number(data.edadMinima),
             fechaInicio: data.fechaInicio,
-            fechaFin: data.fechaFin 
-
+            fechaFin: data.fechaFin,
+            imagen: data.imagen
         }
     })
+    console.log("Curso creado con éxito!: ", createdCurso)
+    return createdCurso
+    
 }
 
 
@@ -138,6 +142,7 @@ export async function updateCurso(id: number, data: {
     fechaFin: Date
     edadMinima: number
     edadMaxima: number
+    imagen?: string | null
   
 }) {
     return prisma.curso.update({
@@ -150,7 +155,9 @@ export async function updateCurso(id: number, data: {
             fechaInicio: data.fechaInicio,
             fechaFin: data.fechaFin,
             edadMaxima: Number(data.edadMaxima),
-            edadMinima: Number(data.edadMinima)
+            edadMinima: Number(data.edadMinima),
+            imagen: data.imagen
+
         }
     })
 }

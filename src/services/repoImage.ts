@@ -94,3 +94,84 @@ export const getImagesUser = async () => {
         return { error: 'Failed to fetch data' };
     }
 }
+
+export const uploadImageCursos = async (base64File: string, fileName: string) => {
+    console.log(fileName)
+
+    const folderPath = 'talleres_img/'; //Definimos la carpeta donde queramos que se guarde la imagen 
+    const url = `${process.env.GITHUB_API_ADMIN_URL}${folderPath}${fileName}`; // Especificar el nombre del archivo en la URL
+
+    try {
+        const response = await fetch(url, {
+            method: 'PUT', // GitHub requiere PUT para subir archivos
+            headers: {
+                'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: "Add image", // Mensaje de commit obligatorio
+                content: base64File.split(",")[1]  // Remover el prefijo antes de enviar a GitHub
+            })
+        });
+
+        const data = await response.json();
+        console.log(data);
+        return data;
+    } catch (error) {
+        return { error: 'Failed to upload image' };
+    }
+};
+
+export const deleteImageCursos = async (fileName: string) => {
+    const folderPath = 'talleres_img/'; // Definimos la carpeta donde se guarda la imagen
+    const url = `${process.env.GITHUB_API_ADMIN_URL}${folderPath}${fileName}`; // Especificar el nombre del archivo en la URL
+  
+    try {
+      // Obtener el SHA del archivo
+      const sha = await getFileSha(url);
+      if (!sha) {
+        return { error: 'Failed to get file SHA' };
+      }
+  
+      const response = await fetch(url, {
+        method: 'DELETE', // GitHub requiere DELETE para borrar archivos
+        headers: {
+          'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: "Delete image", // Mensaje de commit obligatorio
+          sha: sha // Incluir el SHA del archivo a eliminar
+        })
+      });
+  
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      return { error: 'Failed to delete image' };
+    }
+  };
+  
+  // Función para obtener el SHA del archivo
+  const getFileSha = async (url: string) => {
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch file SHA');
+      }
+  
+      const data = await response.json();
+      return data.sha;
+    } catch (error) {
+      console.error('Error fetching file SHA:', error);
+      return null;
+    }
+  };
