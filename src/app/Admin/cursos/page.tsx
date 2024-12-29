@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Navigate from "../../../components/Admin/navigate/page";
-import Loader from "@/components/Loaders/loader/loader";
+
 
 import { updateCurso, getCursos, deleteCurso, createCurso, } from "../../../services/cursos";
 import Image from "next/image";
@@ -16,6 +16,7 @@ import { getImages_talleresAdmin } from "@/services/repoImage";
 import withAuth from "../../../components/Admin/adminAuth";
 import { autorizarAdmin } from "@/helpers/cookies";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/Loaders/loadingSave/page";
 //para subir imagenes:
 import { handleUploadCursoImage, handleDeleteCursoImage, mapearImagenes } from "@/helpers/repoImages";
 import { Trash2 } from "lucide-react";
@@ -228,8 +229,8 @@ const Cursos: React.FC = () => {
 
 
 
-  // Función para manejar el guardado de cambios en el curso
-  async function handleSaveChanges() {
+   // Función para manejar el guardado de cambios en el curso
+   async function handleSaveChanges() {
     // Elimina los espacios en blanco antes de guardar los detalles
     const trimmedCursoDetails = {
       ...cursoDetails,
@@ -238,12 +239,11 @@ const Cursos: React.FC = () => {
     };
 
     const validationError = validateCursoDetails(trimmedCursoDetails);
-    const validationErrorFechaInicio = validateFechaInicioModificacion(trimmedCursoDetails.fechaInicio, fechaInicioAnterior || undefined);
-    if (validationError || validationErrorFechaInicio) {
+    if (validationError) {
       setErrorMessage(validationError);
       return;
     }
-   
+
 
     if (selectedCursoId !== null) {
       try {
@@ -278,7 +278,7 @@ const Cursos: React.FC = () => {
         setErrorMessage(""); // Limpiar mensaje de error si todo fue bien
 
       } catch (error) {
-        console.error("Imposible actualizar el curso", error); // Manejo de errores
+        console.error("No se pudo actualizar el curso, intente de nuevo", error); // Manejo de errores
       }
     }
   }
@@ -675,10 +675,7 @@ const Cursos: React.FC = () => {
                 {isSaving ? <Loader /> : "Guardar"}
               </button>
               <button
-                onClick={() => {
-                  setSelectedCursoId(null);
-                  setErrorMessage(null);
-                }}
+                onClick={() => setSelectedCursoId(null)}
                 disabled={isSaving}
                 className="bg-gray-600 py-1 px-3 text-white rounded text-sm hover:bg-gray-700"
               >
@@ -688,8 +685,6 @@ const Cursos: React.FC = () => {
           </div>
         </div>
       )}
-
-
      
     </main>
   );
