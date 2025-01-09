@@ -454,7 +454,7 @@ const Cursos: React.FC = () => {
               const searchTerm = e.target.value.toLowerCase();
               setCursos(cursos.map(curso => ({
                 ...curso,
-                visible: curso.nombre.toLowerCase().includes(searchTerm) || curso.descripcion.toLowerCase().includes(searchTerm)
+                visible: curso.nombre.toLowerCase().includes(searchTerm)
               })));
             }}
           />

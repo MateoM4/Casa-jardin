@@ -121,8 +121,20 @@ saludos cordiales, Casa Jardín`);
   const handleRechazar = async (solicitudId: number, correo: string) => {
     try {
       await updateSolicitud(solicitudId, { leida: true, enEspera: true });
+<<<<<<< Updated upstream
       await emailRechazo(correo, title, body);
       setSuccessMessage('La solicitud ha sido rechazada correctamente.');
+=======
+  
+      const response = await sendEmailCustom(soliAlumno.alumno.email, title, body);
+    
+      if (response.ok) {
+        setSuccessMessage('La solicitud ha sido rechazada correctamente.');
+      } else {
+        throw new Error('Error sending email');
+      }
+
+>>>>>>> Stashed changes
     } catch (error) {
       throw error;
     } finally {
@@ -142,8 +154,19 @@ saludos cordiales, Casa Jardín`);
           "cursoId": (curso),
         });
       }
+<<<<<<< Updated upstream
       await emailAceptar(soliAlumno.alumno.email, title, body);
       setSuccessMessage('La solicitud ha sido aceptada correctamente.');
+=======
+     
+      const response = await sendEmailCustom(soliAlumno.alumno.email, title, body);
+    
+      if (response.ok) {
+        setSuccessMessage('La solicitud ha sido aceptada correctamente.');
+      } else {
+        throw new Error('Error sending email');
+      }
+>>>>>>> Stashed changes
     } catch (error) {
       throw error;
     } finally {
@@ -158,7 +181,7 @@ saludos cordiales, Casa Jardín`);
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
         <div className={`p-4 border-b flex justify-between items-center ${aceptar ? 'bg-sky-600' : 'bg-red-600'}`}>
-          <h2 className="text-xl font-semibold text-gray-800">Manejo de Solicitud</h2>
+          <h2 className="text-xl font-semibold text-white">Manejo de Solicitud</h2>
           <button
             onClick={onClose}
             className="text-white hover:text-gray-700 transition-colors"

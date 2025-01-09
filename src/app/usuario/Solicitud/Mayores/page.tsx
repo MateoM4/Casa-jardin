@@ -8,19 +8,15 @@ import Reglamentacion from './componentes/reglamentacion';
 import SeleccionTaller from './componentes/seleccionTaller';
 import DatosAlumno from './componentes/datosAlumno';
 import EmailPage from '../email/EmailPage';
-import { Alumno, createAlumno, dniExists, emailExists, getAlumnoByEmail, updateAlumno } from '@/services/Alumno';
-import { addDireccion, getDireccionById, getDireccionCompleta } from '@/services/ubicacion/direccion';
-import { addPais, getPaisById } from '@/services/ubicacion/pais';
-import { addProvincias, getProvinciasById } from '@/services/ubicacion/provincia';
+
+import { getDireccionCompleta } from '@/services/ubicacion/direccion';
 import { createSolicitudMayor } from '@/services/Solicitud/SolicitudMayor';
 import { createSolicitud } from '@/services/Solicitud/Solicitud';
 import { useRouter } from 'next/navigation';
 import { autorizarUser, fetchUserData } from '@/helpers/cookies';
-import { addLocalidad, getLocalidadById } from '@/services/ubicacion/localidad';
-import { createAlumno_Curso, getCursosByIdAlumno } from '@/services/alumno_curso';
+import { getCursosByIdAlumno } from '@/services/alumno_curso';
 import { createCursoSolicitud } from '@/services/curso_solicitud';
-import withAuthUser from "../../../../components/alumno/userAuth";
-import { calcularEdad, dateTimeToDate } from '@/helpers/fechas';
+import { calcularEdad } from '@/helpers/fechas';
 import { validateApellido, validateDireccion, validateDni, validateEmail, validateNombre, validatePhoneNumber } from '@/helpers/validaciones';
 import Loader from '@/components/Loaders/loader/loader';
 
@@ -364,6 +360,7 @@ const Mayores: React.FC = () => {
                             edad={calcularEdad(user.fechaNacimiento)}
                             setSelectedCursosId={setSelectedCursosId}
                             selectedCursosId={selectedCursosId}
+                            alumnoId={user.id}
                         />
                     ) :
                         <div className=' w-full justify-center items-center align-middle flex'>
