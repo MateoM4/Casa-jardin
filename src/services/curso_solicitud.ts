@@ -1,8 +1,6 @@
 "use server"
 
 import { PrismaClient } from "@prisma/client";
-import { get } from "http";
-import { getalumnos_cursoByIdAlumnoIdCur } from "./alumno_curso";
 
 const prisma = new PrismaClient();
 //crear curso_solicitud
@@ -54,5 +52,16 @@ export async function deleteCursoSolicitud(soliId: number, idAlumno: number) {
     where: {
       solicitudId: soliId,
     },
+  });
+}
+//update el estado de los cursos_solicitud aceptados
+export async function updateCursoSolicitud(cursoId: number, data: {
+  estado: boolean;
+}) {
+  return await prisma.cursoSolicitud.updateMany({
+    where: {
+      cursoId: cursoId,
+    },
+    data: data,
   });
 }

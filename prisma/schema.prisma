@@ -197,7 +197,6 @@ model Hora {
 model Solicitud {
   id Int @id @default(autoincrement())
   leida Boolean @default(false)
-  enEspera Boolean @default(false)
   // Relaciones
   solicitudMayores SolicitudMayores? // Relación de uno a uno con SolicitudMayores
   solicitudMenores SolicitudMenores? // Relación de uno a uno con SolicitudMenores
@@ -209,6 +208,9 @@ model CursoSolicitud {
   solicitudId Int
   curso Curso @relation(fields: [cursoId], references: [id])
   cursoId Int 
+  //true = aceptado, false = rechazado 
+  //(para que el alumno pueda saber si de esa solicitud en que cursos fue aceptado)
+  estado Boolean @default(false) 
 }
 model SolicitudMayores {
   id          Int       @id @default(autoincrement())

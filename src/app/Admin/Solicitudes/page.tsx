@@ -1,17 +1,14 @@
 "use client"
 import Image from "next/image";
 import { useEffect, useState } from "react";
-//import Background from "../../../../public/Images/Background.jpeg"
 import Navigate from "@/components/Admin/navigate/page";
 
-import { getAllSolicitudesMayores, SolicitudMayor } from "@/services/Solicitud/SolicitudMayor";
-import { deleteSolicitud, getAllSolicitudes, getPersonasSoli, getPersonasSoli2, getSolicitudById, Solicitud, updateSolicitud } from "@/services/Solicitud/Solicitud";
-import { getAllSolicitudesMenores, SolicitudMenores } from "@/services/Solicitud/SolicitudMenor";
-import { emailRechazo } from "@/helpers/email/emailSolicitudes";
+import { SolicitudMayor } from "@/services/Solicitud/SolicitudMayor";
+import { deleteSolicitud, Solicitud, } from "@/services/Solicitud/Solicitud";
+import { SolicitudMenores } from "@/services/Solicitud/SolicitudMenor";
 import Background from "../../../../public/Images/BackgroundSolicitudes.jpg";
 import Loader from "@/components/Loaders/loader/loader";
-import { getCursoSolicitudBySoliId } from "@/services/curso_solicitud";
-import { createAlumno_Curso } from "@/services/alumno_curso";
+
 
 //nuevas llamadas
 import { getSolicitudesCompletas } from "@/services/Solicitud/Solicitud";
@@ -27,7 +24,6 @@ import { SolicitudEmailForm } from "@/components/Admin/solicitudes/solicitudEmai
 // para la tabla
 import { SolicitudData, createColumns } from "@/components/Admin/solicitudes/column";
 import { DataTable } from "@/components/Admin/solicitudes/data-table";
-import { create } from "domain";
 import { Button } from "@/components/ui/button";
 
 
@@ -49,10 +45,8 @@ const solicitudPage: React.FC = () => {
     
 
     const [alumnosMayores, setAlumnosMayores] = useState<any[]>()
-    const [direccionesMayores, setDireccionesMayores] = useState<any[]>()
     const [alumnosMenores, setAlumnosMenores] = useState<any[]>()
     const [responsables, setResponsables] = useState<any[]>()
-    const [direccionesMenores, setDireccionesMenores] = useState<any[]>()
     const [loading, setLoading] = useState<boolean>(true);
 
     //para las solicitudes no leidas
@@ -132,7 +126,6 @@ const solicitudPage: React.FC = () => {
           //esto se utiliza para las columnas de la tabla
           id: solicitud.id,
           leida: solicitud.leida,
-          enEspera: solicitud.enEspera,
         });
 
         //esto ya es para para los datos de las solicitudes 
@@ -207,57 +200,6 @@ const solicitudPage: React.FC = () => {
         console.log("soli menores no leidas: ",soliMenoresNoLeid);
     }
 
-    /* const fetchData = async () => {
-
-        const [dataMa, dataMe, soli] = await Promise.all([
-            getAllSolicitudesMayores(),
-            getAllSolicitudesMenores(),
-            getAllSolicitudes()
-        ]);
-        //const [dataMa, dataMe] = await getPersonasSoli2(solicitudesMayores, solicitudMenores); 
-        setSolicitudes(soli);
-        setSolicitudesMayores(dataMa);
-        setSolicitudesMenores(dataMe);
-
-        
-        const [alumnosMayores, alumnosMenores, responsablesMenores] = await getPersonasSoli(dataMa, dataMe);
-        console.log("ALUMNOSMAYORES", alumnosMayores)
-        console.log("ALUMNOSMENORES", alumnosMenores)
-        setAlumnosMayores(alumnosMayores);
-        //setDireccionesMayores(direccionesMayores)
-        setAlumnosMenores(alumnosMenores)
-        setResponsables(responsablesMenores)
-        //setDireccionesMenores(direccionesMenores)
-
-        // Seteo inicial de solicitudes filtradas
-        const mayoresData = dataMa.map((solicitud) => {
-            const solicitudEstado = soli.find((s) => s.id === solicitud.solicitudId);
-            const alumno = alumnosMayores.find((a) => a?.id === solicitud.alumnoId)
-             
-            return {
-            codigo: solicitud.solicitudId,
-            alumno: alumno ? alumno.nombre + alumno.apellido : "Error: datos no disponibles",
-            email: alumno ? alumno.email : "Error: datos no disponibles",
-            estado: solicitudEstado?.leida ? "Leída" : "No leída",
-            };
-        });
-        setMayoresColData(mayoresData)
-
-        const menoresData = dataMe.map((solicitud) => {
-            const solicitudEstado = soli.find((s) => s.id === solicitud.solicitudId);
-            const alumno = alumnosMenores.find((a) => a?.id === solicitud.alumnoId)
-             
-            return {
-            codigo: solicitud.solicitudId,
-            alumno: alumno ? alumno.nombre + alumno.apellido : "Error: datos no disponibles",
-            email: alumno ? alumno.email : "Error: datos no disponibles",
-            estado: solicitudEstado?.leida ? "Leída" : "No leída",
-            };
-        });
-        setMenoresColData(menoresData)
-
-
-    } */
     const handleEliminarSolicitud = async (solicitudId: number) => {
         //console.log(solicitudMenores);
         await deleteSolicitud(solicitudId);
@@ -315,7 +257,7 @@ const solicitudPage: React.FC = () => {
             }}
         >
             {/* Navegación */}
-            <div className="fixed top-0 left-0 right-0 flex justify-between w-full px-4 bg-sky-600 z-50">
+            <div className="fixed top-0 left-0 right-0 flex justify-between w-full z-50">
                 <Navigate />
             </div>
             <div className="fixed inset-0 z-[-1]">

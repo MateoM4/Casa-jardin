@@ -118,8 +118,7 @@ const Principal: React.FC = () => {
   
     {/* Botón fijo en la parte inferior */}
     <div
-      className="fixed bottom-0 py-2 border-t w-full z-30"
-      style={{ background: "#EF4444" }}
+      className="fixed bottom-0 py-2 border-t w-full z-30 bg-sky-600"
     >
       <But_aside />
     </div>

@@ -197,7 +197,7 @@ const SolicitudMenoresCard: React.FC<SolicitudCardProps> = ({ data }) => {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="bg-blue-600 p-4 text-white">
             <h2 className="text-2xl font-bold flex items-center gap-2">
-              <User className="w-6 h-6" />
+              <NotebookText className="w-6 h-6" />
               Información Solicitud {data.id}
             </h2>
           </div>

@@ -10,15 +10,12 @@ interface Datos {
 }
 
 const AutorizacionSalidas: React.FC<Datos> = ({ setDatosAutorizacionSalidas }) => {
-    // Estado para almacenar mensajes de error
-    const [errorMessage, setErrorMessage] = useState<string>("");
-
     return (
         <div>
 
             <div className='flex flex-col '>
                 <h1 className='flex justify-center  font-bold text-2xl'>Autorización Anual para Salidas Cercanas</h1>
-                <div className='flex  justify-center '>
+                <div className='flex  justify-center lg:w-1/2 md:1/2 sm:w-2/3 mx-auto mt-5 max-h-[45vh] overflow-y-auto border border-gray-300 rounded-lg p-4 shadow-sm'>
                     <p className='w-1/2 text-center p-5'>Por medio de la presente, en mi carácter de Padre/Madre/ Tutor/Curador,
                         OTORGO AUTORIZACIÓN AL MENOR, para salir del CET CASA JARDIN. 
                         Durante el presente año de inscripción, cuando las actividades 
@@ -38,7 +35,7 @@ const AutorizacionSalidas: React.FC<Datos> = ({ setDatosAutorizacionSalidas }) =
                     </label>
                 </div>
                 <div className='flex flex-col p-2  items-center'>
-                    <label htmlFor="observaciones">Observaciones</label>
+                    <label htmlFor="observaciones">Observaciones (opcional)</label>
                     <input className="w-[50vh] border rounded-md" type="text" name="observaciones" id="observaciones" onChange={(e) => setDatosAutorizacionSalidas(prev => ({ ...prev, observaciones: e.target.value }))} />
                 </div>
 {/*                 <div className='p-2   w-full justify-center mt-10'>

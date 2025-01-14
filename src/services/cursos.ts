@@ -237,8 +237,13 @@ export async function getCursosActivos(){
     return cursos.filter(curso => curso.fechaInicio <= fechaHoy && curso.fechaFin >= fechaHoy);
 }
 
+<<<<<<< HEAD
 export async function getCursosDisponiblesAlumno(edad: number, alumnoId: number) {
     const fechaHoy = new Date();
+=======
+export async function getCursosDisponiblesAlumno(edad: number, alumnoId: number){
+    const fechaHoy = new Date()
+>>>>>>> main
     return await prisma.curso.findMany({
         where: {
             edadMinima: {
@@ -253,6 +258,7 @@ export async function getCursosDisponiblesAlumno(edad: number, alumnoId: number)
             fechaFin: {
                 gte: fechaHoy
             },
+<<<<<<< HEAD
             alum_cur: {
                 none: {
                     alumnoId: alumnoId
@@ -260,4 +266,15 @@ export async function getCursosDisponiblesAlumno(edad: number, alumnoId: number)
             }
         }
     });
+=======
+            // para que no se muestren los cursos en los que el alumno ya esta inscripto
+            alum_cur: {
+                none: {
+                    alumnoId
+                }
+            }
+            //despues hay que agregar que no muestre los que ya le creo una solicitud
+        }
+    })
+>>>>>>> main
 }

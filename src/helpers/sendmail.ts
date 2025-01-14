@@ -10,9 +10,12 @@ export const sendEmail = async (email: string): Promise<Response> => {
     if (!response.ok) {
       throw new Error("Error sending email");
     }
+<<<<<<< HEAD
 <<<<<<< Updated upstream
   };
 =======
+=======
+>>>>>>> main
     return response
 };
 
@@ -28,7 +31,12 @@ export const sendEmailCustom = async (email: string, titulo?: string, texto?: st
   if (!response.ok) {
     throw new Error("Error sending email");
   }
+<<<<<<< HEAD
 
   return response
 };
 >>>>>>> Stashed changes
+=======
+  return response
+};
+>>>>>>> main

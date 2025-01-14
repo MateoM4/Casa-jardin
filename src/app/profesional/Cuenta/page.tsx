@@ -295,12 +295,6 @@ const Cuenta: React.FC = () => {
                     </button>
                 </div>
             </div>
-           <div
-                       className="fixed bottom-0 py-2 border-t w-full z-30"
-                       style={{ background: "#EF4444" }}
-                     >
-                       <But_aside />
-                     </div>
             {openBox === 1 && (
                 <div className="fixed inset-0 flex items-center w-600 justify-center bg-black bg-opacity-50">
                     <div ref={scrollRef} className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative" style={{ height: '70vh', overflow: "auto" }}>

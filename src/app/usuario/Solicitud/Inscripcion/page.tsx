@@ -111,8 +111,7 @@ const Inscripcion: React.FC<{}> = () => {
                 </div>
             </div>
             <div
-                className="fixed bottom-0 py-2 border-t w-full z-30"
-                style={{ background: "#EF4444" }}
+                className="bg-sky-600 fixed bottom-0 py-2 border-t w-full z-30"
             >
                 <But_aside />
             </div>

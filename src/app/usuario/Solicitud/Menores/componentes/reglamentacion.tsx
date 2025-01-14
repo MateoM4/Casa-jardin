@@ -10,22 +10,20 @@ interface Datos {
 
 const Reglamentacion: React.FC<Datos> = ({ setDatosReglamentacion }) => {
     // Estado para almacenar mensajes de error
-    const [errorMessage, setErrorMessage] = useState<string>("");
     const [alertaFinal, setAlertaFinal] = useState<boolean>(false);
 
     return (
-        <div>
-
-            <div className=' px-4 pb-8 w-full '>
-                <h1 className='flex  justify-center font-bold text-2xl'>Reglamento para alumnos de Centro Educativo Terapéutico CASA JARDÍN</h1>
-                <div className='lg:w-1/2 md:1/2 sm:w-2/3 mx-auto mt-5'>
+        <div className='w-full h-full'>
+            <div className='px-4 pb-8 w-full'>
+                <h1 className='flex justify-center font-bold text-2xl'>Reglamento para alumnos de Centro Educativo Terapéutico CASA JARDÍN</h1>
+                <div className='lg:w-1/2 md:1/2 sm:w-2/3 mx-auto mt-5 max-h-[45vh] overflow-y-auto border border-gray-300 rounded-lg p-4 shadow-sm'>
                     <p>
                         Bienvenido a  “Casa Jardín”, les comunicarnos que
                         hemos elaborado estas normas de convivencia y funcionamiento
                         de nuestros Talleres con el fin de establecer igualdad, seriedad
                         y regularidad  en todos los espacios educativos que brindamos.
                     </p>
-                    <ol className=' pl-10'>
+                    <ol className='pl-10'>
                         <li>
                             1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Los alumnos deben presentar al
                             inscribirse para el ciclo 2024 (enero-diciembre) las planillas
@@ -101,19 +99,16 @@ const Reglamentacion: React.FC<Datos> = ({ setDatosReglamentacion }) => {
                         </div>
                     </div>
                     }
-                    <div className='flex justify-center items-center mt-8 flex-col border-t p-2 '>
+                    <div className='flex justify-center items-center mt-8 flex-col border-t p-2'>
                         <label htmlFor="firma">Firma de Padre/Madre/Tutor</label>
                         <input type="text" name="firma" id="firma" className="border rounded w-96" placeholder='Ingrese su firma' onChange={(e) => setDatosReglamentacion(prev => ({ ...prev, firma: e.target.value }))} />
                         <div className='flex'>
                             <span>Al hacer clic en enviar usted esta aceptando el&nbsp;</span>
-                            <button className="text-red-500 underline mb-40" onClick={() => setAlertaFinal(true)}>Consentimiento</button>
+                            <button className="text-red-500 underline" onClick={() => setAlertaFinal(true)}>Consentimiento</button>
                         </div>
                     </div>
-
                 </div>
             </div>
-
-
         </div>
     )
 }

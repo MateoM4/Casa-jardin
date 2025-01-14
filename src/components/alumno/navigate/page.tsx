@@ -42,16 +42,16 @@ export default function Navigate() {
   }
 
   return (
-    <nav className="flex justify-between items-center w-full p-3 bg-red-500">
-      <div className="flex items-center cursor-pointer" onClick={()=> window.location.href = "/usuario/Inicio"}>
+    <nav className="flex justify-between items-center w-full p-3 bg-sky-600">
+      <div className="flex items-center cursor-pointer" onClick={()=> window.location.href = "/usuario/principal"}>
         <Image src={Logo} alt="Logo Casa Jardin" width={50} height={50} draggable="false"/>
         <h1 className="ml-2 text-white">Casa Jardín</h1>
       </div>
       <div className="hidden md:flex ml-auto space-x-4 py-2 text-white">
-      <NavLink href="/usuario/principal">Principal</NavLink>
         <NavLink href="/usuario/Cuenta">Mi Cuenta</NavLink>
         <NavLink href="/usuario/Cronograma">Calendario</NavLink>
-        <NavLink href="/usuario/Solicitud/Inscripcion">Solicitud de Inscripción</NavLink>
+        <NavLink href="/usuario/Solicitud/Inscripcion">Inscripción</NavLink>
+        <NavLink href="/usuario/misSolicitudes">Mis Solicitudes</NavLink>
         <NavLink onClick={logout}>Salir</NavLink>
       </div>
       <div className="md:hidden flex items-center">
@@ -74,16 +74,17 @@ export default function Navigate() {
       </div>
       {menuOpen && (
         <div
-          className="md:hidden fixed top-16 left-0 w-full bg-red-500 text-white flex flex-col items-center space-y-4 py-4 max-h-[70vh] overflow-y-auto z-50 shadow-lg"
+          className="md:hidden fixed top-16 left-0 w-full bg-sky-600 text-white flex flex-col items-center space-y-4 py-4 max-h-[70vh] overflow-y-auto z-50 shadow-lg"
         >
-          <div className="border-t w-full"></div>
-          <NavLink href="/usuario/principal">Principal</NavLink>
+          
           <div className="border-t w-full"></div>
           <NavLink href="/usuario/Cuenta">Mi Cuenta</NavLink>
           <div className="border-t w-full"></div>
           <NavLink href="/usuario/Cronograma">Calendario</NavLink>
           <div className="border-t w-full"></div>
-          <NavLink href="/usuario/Solicitud/Inscripcion">Solicitud de Inscripción</NavLink>
+          <NavLink href="/usuario/Solicitud/Inscripcion">Inscripción</NavLink>
+          <div className="border-t w-full"></div>
+          <NavLink href="/usuario/misSolicitudes">Mis Solicitudes</NavLink>
           <div className="border-t w-full"></div>
           <NavLink onClick={logout}>Salir</NavLink>
         </div>

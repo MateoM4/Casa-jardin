@@ -175,14 +175,6 @@ const principal: React.FC = () => {
               </div>
             </div>
           </div>
-    
-          {/* Botón fijo en la parte inferior */}
-          <div
-            className="fixed bottom-0 py-2 border-t w-full z-30"
-            style={{ background: "#EF4444" }}
-          >
-            <But_aside />
-          </div>
         </main>
       );
     };

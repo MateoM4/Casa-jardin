@@ -1,45 +1,44 @@
 "use client"
+//front end
 import React, { useState, useEffect } from 'react';
 import SeleccionTaller from './componentes/seleccionTaller';
 import But_aside from "../../../../components/but_aside/page";
-import Image from "next/image";
 import Navigate from '../../../../components/alumno/navigate/page';
-import DatosMenor from './componentes/datosMenor';
 import CondicionSalud from './componentes/condicionSalud';
 import AutorizacionImg from './componentes/autorizacionImagen';
 import AutorizacionSalidas from './componentes/autorizacionSalidas';
 import Reglamentacion from './componentes/reglamentacion';
-import DatosMayor from './componentes/datosMayor';
 import EmailPage from '../email/EmailPage';
 import { useRouter } from 'next/navigation';
-import { autorizarUser, fetchUserData } from '@/helpers/cookies';
+
 //server
+import { autorizarUser, fetchUserData } from '@/helpers/cookies';
 import { createSolicitud } from '@/services/Solicitud/Solicitud';
-import { addPais } from '@/services/ubicacion/pais';
-import { addProvincias } from '@/services/ubicacion/provincia';
-import { addDireccion, getDireccionCompleta } from '@/services/ubicacion/direccion';
-import { updateAlumno } from '@/services/Alumno';
+import { getDireccionCompleta } from '@/services/ubicacion/direccion';
 import { createSolicitudMenores } from '@/services/Solicitud/SolicitudMenor';
 import { createCursoSolicitud } from '@/services/curso_solicitud';
-import { createAlumno_Curso, getCursosByIdAlumno } from '@/services/alumno_curso';
-import { createResponsable, getResponsableByAlumnoId } from '@/services/responsable';
-import { addLocalidad } from '@/services/ubicacion/localidad';
-import { calcularEdad, dateTimeToString } from '@/helpers/fechas';
+import { getResponsableByAlumnoId } from '@/services/responsable';
+import { calcularEdad} from '@/helpers/fechas';
 import { validateApellido, validateDireccion, validateDni, validateEmail, validateNombre, validatePhoneNumber } from '@/helpers/validaciones';
 import Loader from '@/components/Loaders/loader/loader';
+import { Stepper } from '@/components/alumno/stepper';
+import DatosAlumno from './componentes/datosAlumno';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
+//region useState
 const Menores: React.FC = () => {
     // Estado para almacenar la pantalla actual
     const [selectedScreen, setSelectedScreen] = useState<number>(0);
     // Estado para almacenar los cursos seleccionados
     const [selectedCursosId, setSelectedCursosId] = useState<number[]>([]);
-    const [cursosYaInscriptosId, setCursosYaInscriptosId] = useState<number[]>([]);
-    const [cursosYaInscriptosName, setCursosYaInscriptosName] = useState<number[]>([]);
 
+
+    //datos completos del menor
     const [datosMenor, setDatosMenor] = useState({
         nombre: "",
         apellido: "",
         fechaNacimiento: new Date().toISOString().split('T')[0],
+        correoElectronico: "",
         dni: 0,
         pais: "",
         provincia: "",
@@ -47,17 +46,8 @@ const Menores: React.FC = () => {
         calle: "",
         numero: 0,
     });
-    const [datosMenorCopia, setDatosMenorCopia] = useState({
-        nombre: "",
-        apellido: "",
-        fechaNacimiento: new Date().toISOString().split('T')[0],
-        dni: 0,
-        pais: "",
-        provincia: "",
-        localidad: "",
-        calle: "",
-        numero: 0,
-    });
+
+    //datos completos del mayor
     const [datosMayor, setDatosMayor] = useState({
         nombre: "",
         apellido: "",
@@ -70,18 +60,8 @@ const Menores: React.FC = () => {
         calle: "",
         numero: 0,
     });
-    const [datosMayorCopia, setDatosMayorCopia] = useState({
-        nombre: "",
-        apellido: "",
-        telefono: 0,
-        correoElectronico: "",
-        dni: 0,
-        pais: "",
-        provincia: "",
-        localidad: "",
-        calle: "",
-        numero: 0,
-    });
+
+    //datos de salud y permisos
     const [datosSalud, setDatosSalud] = useState({
         enfermedad: "",
         alergia: "",
@@ -107,17 +87,14 @@ const Menores: React.FC = () => {
     const [verificarEmail, setVerificarEmail] = useState<boolean>(false);
     const [correcto, setCorrecto] = useState(false);
     const [user, setUser] = useState<any>();
-    const [verifi, setVerifi] = useState<boolean>(false)
 
-    const [direccionId, setDireccionId] = useState<number>(0);
-    const [direccionIdMayor, setDireccionIdMayor] = useState<number>(0);
 
     const [steps, setStep] = useState({
-        stepsItems: ["Talleres", "Datos menor", "Datos mayor", "Uso de Imagen", "Salidas", "Reglamentación"],
+        stepsItems: ["Talleres", "Datos del Alumno", "Condición de salud", "Uso de Imagen", "Salidas", "Reglamentación"],
         currentStep: 1
     })
 
-    //datos menor: nombre, apellido, edad, fecha de nacimiento, dni,pais, localidad,calle
+    //datos menor: nombre, apellido, edad, fecha de nacimiento, correo electronico, dni,pais, localidad,calle
     //datos mayor: nombre, apellido, telefono, correo electronico, dni, pais, localidad, calle
     //datos salud: enfermedad ?, alergia?, tratamiento o medicacion?, terapia?, consultas a especialistas (neurologo, cardiologo, fisioterapeutas, etc.)
     //datos autorizacionImage: firmo el mayor a cargo?, observaciones? puede ser nulo
@@ -128,13 +105,14 @@ const Menores: React.FC = () => {
 
     const router = useRouter();
     // Para cambiar al usuario de página si no está logeado
+
+    //region useEffect
     useEffect(() => {
         if (!user) {
             const authorizeAndFetchData = async () => {
                 // Primero verifico que el user esté logeado
 
                 // Una vez autorizado obtengo los datos del user y seteo el email
-
                 const user = await fetchUserData();
                 const edad = calcularEdad(user.fechaNacimiento);
                 if (edad > 17) {
@@ -153,13 +131,7 @@ const Menores: React.FC = () => {
 
                 const user = await fetchUserData();
 
-
-                const curYaInscriptos = await getCursosByIdAlumno(user.id);
-                const curYaInscriptosId = curYaInscriptos.map((curso) => curso.id);
-                const curYaInscriptosName = curYaInscriptos.map((curso) => curso.nombre);
-                setCursosYaInscriptosId(curYaInscriptosId);
-                setCursosYaInscriptosName(curYaInscriptosName);
-
+                
                 const responsable = await getResponsableByAlumnoId(user?.id);
                 if (user) {
                     setUser(user);
@@ -170,7 +142,6 @@ const Menores: React.FC = () => {
                         provincia = localidad?.provincia;
                         pais = provincia?.nacionalidad;
                     }
-                    if (direccion) setDireccionId((direccion.id));
 
                     //cargo los datos del menor obtenidos del usuario
                     setDatosMenor({
@@ -178,6 +149,7 @@ const Menores: React.FC = () => {
                         nombre: user.nombre,
                         apellido: user.apellido,
                         fechaNacimiento: new Date(user.fechaNacimiento).toISOString().split('T')[0],
+                        correoElectronico: user.email,
                         dni: Number(user.dni),
                         pais: pais?.nombre || '',
                         provincia: provincia?.nombre || '',
@@ -185,35 +157,11 @@ const Menores: React.FC = () => {
                         calle: direccion?.calle || '',
                         numero: Number(direccion?.numero),
                     });
-                    setDatosMenorCopia({
-                        ...datosMenor,
-                        nombre: user.nombre,
-                        apellido: user.apellido,
-                        fechaNacimiento: new Date(user.fechaNacimiento).toISOString().split('T')[0],
-                        dni: Number(user.dni),
-                        pais: pais?.nombre || '',
-                        provincia: provincia?.nombre || '',
-                        localidad: localidad?.nombre || '',
-                        calle: direccion?.calle || '',
-                        numero: Number(direccion?.numero),
-                    });
+                    
                     if (typeof (responsable) !== "string" && responsable) {
-                        setDireccionIdMayor(responsable.id)
-                        //cargo los datos del menor obtenidos del usuario
+                        
+                        //datos del responsable
                         setDatosMayor({
-                            ...datosMayor,
-                            nombre: responsable.nombre,
-                            apellido: responsable.apellido,
-                            telefono: Number(responsable.telefono),
-                            correoElectronico: responsable.email,
-                            dni: Number(responsable.dni),
-                            pais: pais?.nombre || '',
-                            provincia: provincia?.nombre || '',
-                            localidad: localidad?.nombre || '',
-                            calle: direccion?.calle || '',
-                            numero: Number(direccion?.numero),
-                        });
-                        setDatosMayorCopia({
                             ...datosMayor,
                             nombre: responsable.nombre,
                             apellido: responsable.apellido,
@@ -239,81 +187,10 @@ const Menores: React.FC = () => {
         if (correcto) {
             console.log("0.CARGANDO SOLICITUD")
             cargarSolicitud();
-            setVerificarEmail(false);
-
         }
     }, [correcto])
 
-    /*     function validateDatos() {
-            // carrateres especiales en el nombre y la descripción
-            const regex = /^[a-zA-Z0-9_ ,.;áéíóúÁÉÍÓÚñÑüÜ@]*$/; // no quiero que tenga caracteres especiales que las comas y puntos afecten 
-    
-            if (selectedScreen === 0 && selectedCursosId.length === 0) return "Debe seleccionar al menos un taller";
-            if (selectedScreen === 1) {
-                // Validar que el nombre tenga al menos 2 caracteres
-                if (datosMenor.nombre.length < 1 && regex.test(datosMenor.nombre)) {
-                    return ("El nombre debe tener al menos 2 caracteres.");
-                }
-                if (datosMenor.apellido.length < 1 && regex.test(datosMenor.apellido)) {
-                    return ("El apellido debe tener al menos 2 caracteres.");
-                }
-                if ((datosMenor.dni).toString().length != 8) {
-                    return ("El DNI debe tener al menos 8 números.");
-                }
-                if (datosMenor.pais.length < 1 && regex.test(datosMenor.pais)) {
-                    return ("El país debe tener al menos 2 caracteres.");
-                }
-                if (datosMenor.provincia.length < 1 && regex.test(datosMenor.provincia)) {
-                    return ("La provincia debe tener al menos 2 caracteres.");
-                }
-                if (datosMenor.localidad.length < 1 && regex.test(datosMenor.localidad)) {
-                    return ("La localidad debe tener al menos 2 caracteres.");
-                }
-                if (datosMenor.calle.length < 1 && regex.test(datosMenor.calle)) {
-                    return ("La calle debe tener al menos 2 caracteres.");
-                }
-                if (!datosMenor.numero) {
-                    return ("El número debe tener al menos 1 número.");
-                }
-                if (!/\d/.test(datosMenor.fechaNacimiento)) return ("La fecha de nacimiento es obligatoria");
-            }
-            if (selectedScreen === 2) {
-                // Validar que el nombre tenga al menos 2 caracteres
-                if (datosMayor.nombre.length < 1 && regex.test(datosMayor.nombre)) {
-                    return ("El nombre debe tener al menos 2 caracteres.");
-                }
-                if (datosMayor.apellido.length < 1 && regex.test(datosMayor.apellido)) {
-                    return ("El apellido debe tener al menos 2 caracteres.");
-                }
-                if ((datosMayor.telefono).toString().length < 7) {
-                    return ("El telefono debe tener al menos 9 números.");
-                }
-                if (datosMayor.correoElectronico.length < 11 || !datosMayor.correoElectronico.includes('@')) {
-                    return ("El correo electrónico debe tener al menos 11 caracteres y contener '@'.");
-                }
-                if ((datosMayor.dni).toString().length != 8) {
-                    return ("El DNI debe tener al menos 8 números.");
-                }
-                if (datosMayor.pais.length < 1 && regex.test(datosMayor.pais)) {
-                    return ("El país debe tener al menos 2 caracteres.");
-                }
-                if (datosMayor.provincia.length < 1 && regex.test(datosMayor.provincia)) {
-                    return ("La provincia debe tener al menos 2 caracteres.");
-                }
-                if (datosMayor.localidad.length < 1 && regex.test(datosMayor.localidad)) {
-                    return ("La localidad debe tener al menos 2 caracteres.");
-                }
-                if (datosMayor.calle.length < 1 && regex.test(datosMayor.calle)) {
-                    return ("La calle debe tener al menos 2 caracteres.");
-                }
-                if (!datosMayor.numero) {
-                    return ("El número debe tener al menos 1 número.");
-                }
-            }
-    
-    
-            return ""
-        } */
+
     //region validate 
     async function validatealumnoDetails() {
         const { nombre, apellido, dni, pais, provincia, localidad, calle, numero } = datosMenor || {};
@@ -323,9 +200,7 @@ const Menores: React.FC = () => {
         //validar que el nombre sea de al menos 2 caracteres y no contenga números
         let resultValidate;
         if (selectedScreen === 0 && selectedCursosId.length === 0) return "Debe seleccionar al menos un taller";
-        if (selectedScreen === 0 && selectedCursosId.some(id => cursosYaInscriptosId.includes(id))) {
-            return "Ya se encuentra inscripto en uno de los talleres seleccionados (sus talleres: " + cursosYaInscriptosName.join(", ") + ").";
-        }
+       
         if (selectedScreen === 1) {
             resultValidate = validateNombre(nombre);
             if (resultValidate) return resultValidate;
@@ -336,14 +211,10 @@ const Menores: React.FC = () => {
             resultValidate = validateDni(String(dni));
             if (resultValidate) return resultValidate;
             console.log(JSON.stringify(datosMayor))
-            console.log(JSON.stringify(datosMayorCopia))
             resultValidate = validateDireccion(pais, provincia, localidad, String(calle), Number(numero));
             if (resultValidate) return resultValidate
-
-            if (JSON.stringify(datosMenor) !== JSON.stringify(datosMenorCopia)) {
-                return "Los datos del alumno no son los mismos que los registrados en el sistema";
-            }
         }
+
         if (selectedScreen === 2) {
             resultValidate = validateNombre(nombreM);
             if (resultValidate) return resultValidate;
@@ -366,15 +237,6 @@ const Menores: React.FC = () => {
             if (resultValidate) return resultValidate
 
             console.log(JSON.stringify(datosMayor))
-            console.log(JSON.stringify(datosMayorCopia))
-            if (datosMayorCopia.nombre && datosMayorCopia.apellido && datosMayorCopia.correoElectronico &&
-                datosMayorCopia.telefono && datosMayorCopia.pais && datosMayorCopia.provincia &&
-                datosMayorCopia.localidad && datosMayorCopia.calle && datosMayorCopia.numero && datosMayorCopia.dni
-            ) {
-                if (JSON.stringify(datosMayor) !== JSON.stringify(datosMayorCopia)) {
-                    return "Los datos del responsable no son los mismos que los registrados en el sistema";
-                }
-            }
         }
         return "";
     }
@@ -397,15 +259,7 @@ const Menores: React.FC = () => {
         //crear ubicaciones del mayor/responsable
         //crear responsable del menor
         console.log("datosMayor", datosMayor)
-        const alumno = await createResponsable({
-            alumnoId: Number(user?.id),
-            nombre: datosMayor.nombre,
-            apellido: datosMayor.apellido,
-            dni: datosMayor.dni,
-            email: datosMayor.correoElectronico,
-            telefono: String(datosMayor.telefono),
-            direccionId: direccionIdMayor ? direccionIdMayor : direccionId
-        })
+        const alumno = user
 
         //console.log("RESPONSABLE::::", responsable)
 
@@ -438,57 +292,33 @@ const Menores: React.FC = () => {
                 "cursoId": selectedCursosId[i],
                 "solicitudId": solicitud.id,
             })
-            await createAlumno_Curso({
-                "alumnoId": Number(user?.id),
-                "cursoId": selectedCursosId[i],
-            })
         }
-        setCorrecto(false)
-        setVerifi(false)
+        /* setCorrecto(false)
+        setVerifi(false) */
         window.location.href = "/usuario/principal"
 
     }
+    //region return
     return (
 
-        <main>
+        <main className="flex flex-col min-h-screen">
             <Navigate />
             <div className='p-4  mt-5'>
                 <h3 className='p-2 shadow-md w-60'>Inscripción a talleres - Menores</h3>
             </div>
-            <div className="max-w-2xl mx-auto px-4 md:px-0 mb-5 ">
-                <ul aria-label="Steps" className="items-center text-gray-600 font-medium md:flex">
-                    {steps.stepsItems.map((item, idx) => (
-                        <li aria-current={steps.currentStep == idx + 1 ? "step" : false} className="flex gap-x-3 md:flex-col md:flex-1 md:gap-x-0">
-                            <div className="flex flex-col items-center md:flex-row md:flex-1">
-                                <hr className={`w-full border hidden md:block ${idx == 0 ? "border-none" : steps.currentStep >= idx + 1 ? "border-indigo-600" : ""}`} />
-                                <div className={`w-8 h-8 rounded-full border-2 flex-none flex items-center justify-center ${(steps.currentStep > idx + 1 ? "bg-indigo-600 border-indigo-600" : "") || (steps.currentStep == idx + 1 ? "border-indigo-600" : "")}`}>
-                                    <span className={`w-2.5 h-2.5 rounded-full bg-indigo-600 ${steps.currentStep != idx + 1 ? "hidden" : ""}`}></span>
-                                    {
-                                        steps.currentStep > idx + 1 ? (
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-white">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                            </svg>
-                                        ) : ""
-                                    }
-                                </div>
-                                <hr className={`h-12 border md:w-full md:h-auto ${(idx + 1 == steps.stepsItems.length ? "border-none" : "") || steps.currentStep > idx + 1 ? "border-indigo-600" : ""}`} />
-                            </div>
-                            <div className="h-8 flex justify-center items-center md:mt-3 md:h-auto">
-                                <h3 className={`text-sm ${steps.currentStep == idx + 1 ? "text-indigo-600" : ""}`}>
-                                    {item}
-                                </h3>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+            <div className="max-w-4xl mx-auto px-4 md:px-8 mb-5">
+                <div className="max-w-2xl mx-auto px-4 md:px-0 mb-5">
+                    <Stepper steps={steps.stepsItems} currentStep={selectedScreen + 1} className=''/>
+                </div>
             </div>
             <div id='miDiv'  style={{ height: "auto"}}>
                 {selectedScreen === 0 && (
-                    (user && cursosYaInscriptosId.length !== 0) ? (
+                    (user) ? (
                         <SeleccionTaller
                             edad={calcularEdad(user.fechaNacimiento)}
                             setSelectedCursosId={setSelectedCursosId}
                             selectedCursosId={selectedCursosId}
+                            alumnoId={user.id}
                         />
                     ) :
                         <div className=' w-full justify-center items-center align-middle flex'>
@@ -497,120 +327,118 @@ const Menores: React.FC = () => {
 
                 )}
                 {selectedScreen === 1 && (
-                    <DatosMenor
-                        datosMenor={datosMenor}
-                        setDatosMenor={setDatosMenor}
+                    <DatosAlumno
+                        datosMenor = {datosMenor}
+                        datosMayor={datosMayor}
                     />
                 )}
                 {selectedScreen === 2 && (
-                    <DatosMayor
-                        setDatosMayor={setDatosMayor}
-                        datosMayor={datosMayor}
-                        setError={setError}
-                    />
-                )}
-                {selectedScreen === 3 && (
                     <CondicionSalud
                         setDatosSalud={setDatosSalud}
                     />
                 )}
-                {selectedScreen === 4 && (
+                {selectedScreen === 3 && (
                     <AutorizacionImg
                         setDatosAutorizacionImage={setDatosAutorizacionImage}
                     />
                 )}
-                {selectedScreen === 5 && (
+                {selectedScreen === 4 && (
                     <AutorizacionSalidas
                         setDatosAutorizacionSalidas={setDatosAutorizacionSalidas}
                     />
                 )}
-                {selectedScreen === 6 && (
+                {selectedScreen === 5 && (
                     <Reglamentacion
                         setDatosReglamentacion={setDatosReglamentacion}
                     />
                 )}
                 {selectedScreen === 0 && (
-                    (user && cursosYaInscriptosId.length !== 0) && (
+                    (user) && (
                         <div className='p-5 w-full'>
                             <div className='flex mb-5 justify-center   space-x-80'>
-                                <button
-                                    className='mx-2 py-2 text-white rounded bg-black px-6'
-                                    onClick={() => {
-                                        selectedScreen - 1 < 0
-                                            ? window.location.href = "/usuario/Solicitud/Inscripcion"
-                                            : (setSelectedScreen(selectedScreen - 1), setStep({ ...steps, currentStep: steps.currentStep - 1 }));
-                                    }}
-                                >
-                                    Volver
-                                </button>
-                                <button
-                                    className='mx-2 py-2 text-white rounded bg-black px-4'
-                                    onClick={() => { continuar(); }}
-                                >
-                                    Continuar
-                                </button>
+                            <button
+                                className='group flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl'
+                                onClick={() => {
+                                selectedScreen - 1 < 0
+                                    ? window.location.href = "/usuario/Solicitud/Inscripcion"
+                                    : (setSelectedScreen(selectedScreen - 1), setStep({ ...steps, currentStep: steps.currentStep - 1 }));
+                                }}
+                            >
+                                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                                Volver
+                            </button>
+                            <button
+                                className='group flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl'
+                                onClick={() => { continuar(); }}
+                            >
+                                Continuar
+                                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                            </button>
                             </div>
                         </div>)
 
                 )}
-                {(selectedScreen < 6 && selectedScreen !== 0) && ((
-                    <>
-                        <div className='p-5 w-full'>
-                            <div className='flex mb-5 justify-center  space-x-80'>
-                                <button
-                                    className='mx-2 py-2 text-white rounded bg-black px-6'
-                                    onClick={() => {
-                                        selectedScreen - 1 < 0
-                                            ? window.location.href = "/usuario/Solicitud/Inscripcion"
-                                            : (setSelectedScreen(selectedScreen - 1), setStep({ ...steps, currentStep: steps.currentStep - 1 }));
-                                    }}
-                                >
-                                    Volver
-                                </button>
-                                <button
-                                    className='mx-2 py-2 text-white rounded bg-black px-4'
-                                    onClick={() => { continuar(); }}
-                                >
-                                    Continuar
-                                </button>
-                            </div>
+                {(selectedScreen < 5 && selectedScreen !== 0) && (
+                    <div className='p-5 w-full'>
+                        <div className='flex justify-center gap-8 md:gap-16'>
+                        <button
+                            className='group flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl'
+                            onClick={() => {
+                            selectedScreen - 1 < 0
+                                ? window.location.href = "/usuario/Solicitud/Inscripcion"
+                                : (setSelectedScreen(selectedScreen - 1), setStep({ ...steps, currentStep: steps.currentStep - 1 }));
+                            }}
+                        >
+                            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                            Volver
+                        </button>
+                        <button
+                            className='group flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl'
+                            onClick={() => { continuar(); }}
+                        >
+                            Continuar
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        </button>
                         </div>
-                    </>)
+                    </div>
                 )}
 
-                {selectedScreen === 6 && (
-                    <div className=' w-full'>
-                        <div className='flex mb-5 justify-center -translate-y-40 space-x-80'>
+                {selectedScreen === 5 && (
+                    <div className='p-5 w-full'>
+                        <div className='flex justify-center gap-8 md:gap-16'>
                             <button
-                                className='mx-2 py-2 text-white rounded bg-black px-5'
-                                onClick={() => { setSelectedScreen(selectedScreen - 1); setStep({ ...steps, currentStep: steps.currentStep - 1 }) }}
+                            className='group flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl'
+                            onClick={() => { 
+                                setSelectedScreen(selectedScreen - 1); 
+                                setStep({ ...steps, currentStep: steps.currentStep - 1 }) 
+                            }}
                             >
-                                Volver
+                            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                            Volver
                             </button>
                             <button
-                                className='mx-2  py-2 text-white rounded bg-black px-5'
-                                onClick={() => {
-
-                                    if (datosReglamentacion.firma.length < 1 && selectedScreen === 6) return setError("Debe firmar la reglamentación");
-                                    setVerificarEmail(true);
-                                }}
-                            /*    onClick={() => cargarSolicitud()} */
+                            className='group flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all duration-200 shadow-lg hover:shadow-xl'
+                            onClick={() => {
+                                if (datosReglamentacion.firma.length < 1) {
+                                return setError("Debe firmar la reglamentación");
+                                }
+                                setVerificarEmail(true);
+                            }}
                             >
-                                Enviar
+                            Enviar
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                             </button>
                         </div>
                     </div>
                 )}
+                
             </div>
-            {verificarEmail && <div className=' absolute bg-slate-100 rounded-md shadow-md px-2 left-1/2 top-1/2 tranform -translate-x-1/2 -translate-y-1/2'>
-                <button className='absolute top-2 right-2' onClick={() => setVerificarEmail(false)}>X</button>
-                <EmailPage email={user.email} setVerifi={setVerifi} setCorrecto={setCorrecto} correcto={correcto} />
-            </div>}
-
-            {verifi && (correcto ?
-                (<h1 className=' absolute top-1/2 text-xl font-semibold' style={{ color: "green" }}>Se ha enviado la solicitud de inscripción correctamente!</h1>)
-                :
-                (<h1 className=' absolute top-1/2 text-xl font-semibold' style={{ color: "red" }}>No se pudo generar la solicitud de inscripción!</h1>)
+            {verificarEmail && (
+                <div className="fixed inset-0 flex items-center justify-center bg-slate-100/80">
+                    <div className="bg-slate-100 rounded-md shadow-md p-4">
+                        <EmailPage email={user.email} setCorrecto={setCorrecto} correcto={correcto} setVerificarEmail={setVerificarEmail} />
+                    </div>
+                </div>
             )}
             {error != '' && <div className="absolute top-1/2 right-1/3 transform -translate-x-1/3 -translate-y-1/4 bg-white border p-4 rounded-md shadow-md w-96">
                 <h2 className="text-lg font-bold text-red-600 mb-2">Error</h2>
@@ -624,12 +452,10 @@ const Menores: React.FC = () => {
                     </button>
                 </div>
             </div>}
-            <div
-                className="fixed bottom-0 py-2 border-t w-full z-30"
-                style={{ background: "#EF4444" }}
-            >
+
+            <footer className="bg-sky-600 mt-auto border-t w-full">
                 <But_aside />
-            </div>
+            </footer>
         </main>
     )
 }

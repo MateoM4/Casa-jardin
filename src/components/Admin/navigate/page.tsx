@@ -42,7 +42,7 @@ export default function Navigate() {
   }
 
   return (
-    <nav className="flex justify-between items-center w-full p-3 bg-sky-600">
+    <nav className="flex justify-between items-center w-full p-3 bg-red-500">
       <div className="flex items-center cursor-pointer" onClick={()=> window.location.href = "/Admin/Inicio"}>
         <Image src={Logo} alt="Logo Casa Jardin" width={50} height={50} draggable="false"/>
         <h1 className="ml-2 text-white">Casa Jardín</h1>
@@ -75,7 +75,7 @@ export default function Navigate() {
       </div>
       {menuOpen && (
         <div
-          className="md:hidden fixed top-16 left-0 w-full bg-sky-600 text-white flex flex-col items-center space-y-4 py-4 max-h-[70vh] overflow-y-auto z-50 shadow-lg"
+          className="md:hidden fixed top-16 left-0 w-full bg-red-500 text-white flex flex-col items-center space-y-4 py-4 max-h-[70vh] overflow-y-auto z-50 shadow-lg"
         >
           <div className="border-t w-full"></div>
           <NavLink href="/Admin/cursos">Talleres</NavLink>

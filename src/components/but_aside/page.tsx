@@ -28,7 +28,7 @@ export default function But_aside() {
       >
         <Image src={Logo} alt="Logo Casa Jardín" width={50} height={50} />
         <h2 style={{ marginTop: "10px", fontSize: "14px"}}>
-          Centro Educativo y Terapéutico "Casa Jardín222"
+          Centro Educativo y Terapéutico "Casa Jardín"
         </h2>
       </div>
 

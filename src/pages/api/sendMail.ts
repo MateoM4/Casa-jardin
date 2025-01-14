@@ -28,6 +28,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     socketTimeout: 60000,
   });
 
+  //verificar connection
   await new Promise((resolve, reject) => {
     // Verify connection configuration
     transporter.verify(function (error, success) {
@@ -68,6 +69,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     ],
   };
 
+  //enviar email
   await new Promise((resolve, reject) => {
     // Send mail
     transporter.sendMail(mailData, (err, info) => {

@@ -84,7 +84,6 @@ export async function deleteSolicitud(solicitudId: number) {
 //modificar solicitud
 export async function updateSolicitud(solicitudId: number, data: {
   leida?: boolean;
-  enEspera?: boolean;
 }) {
   return await prisma.solicitud.update({
     where: {
@@ -220,4 +219,41 @@ export async function getSolicitudesCompletas() {
   });
   return solicitudesConRelaciones;
 }  
+//devuelve las solicitudes completas de un alumno especifico
+export async function getSolicitudesCompletasByAlumno(alumnoId: number) {
+  const solicitudesConRelaciones = await prisma.solicitud.findMany({
+    where: {
+      OR: [
+        { solicitudMayores: { alumnoId: alumnoId }},
+        { solicitudMenores: { alumnoId: alumnoId }},
+      ],
+    },
+    include: {
+      solicitudMayores: {
+        include: {
+          alumno: true, // Datos del alumno para mayores
+        },
+      },
+      solicitudMenores: {
+        include: {
+          alumno: {
+            include: {
+              responsable: {
+                include: {
+                  direccion: true, // Dirección relacionada con el responsable
+                },
+              },
+            },
+          },
+        },
+      },
+      cursoSolicitud: {
+        include: {
+          curso: true, // Cursos relacionados a la solicitud
+        },
+      },
+    },
+  });
+  return solicitudesConRelaciones;
+}
 

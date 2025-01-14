@@ -1,11 +1,18 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import Image from "next/image";
+<<<<<<< HEAD
 import { cn } from '@/lib/utils';
 import { getImages_talleresAdmin } from '@/services/repoImage';
 import { getCursosDisponiblesAlumno} from '@/services/cursos';
+=======
+import { cn } from "@/lib/utils";
+>>>>>>> main
 import NoImage from "../../../../../../public/Images/default-no-image.png";
+import { getImages_talleresAdmin } from '@/services/repoImage';
+import { getCursosDisponiblesAlumno } from '@/services/cursos';
 import Loader from '@/components/Loaders/loader/loader';
+
 interface Datos {
     setSelectedCursosId: React.Dispatch<React.SetStateAction<number[]>>;
     selectedCursosId: number[];
@@ -18,7 +25,11 @@ const SeleccionTaller: React.FC<Datos> = ({ setSelectedCursosId, selectedCursosI
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [images, setImages] = useState<any[]>([]);
     const [downloadurls, setDownloadurls] = useState<any[]>([]);
+<<<<<<< HEAD
     const [loaded, setLoaded] = useState<boolean>(true);
+=======
+    const [loaded, setLoaded] = useState<boolean>(false);
+>>>>>>> main
 
     useEffect(() => {
         fetchCursos();
@@ -36,6 +47,7 @@ const SeleccionTaller: React.FC<Datos> = ({ setSelectedCursosId, selectedCursosI
                 setLoaded(true);
             }
         }
+        setLoaded(true);
     };
 
     async function fetchCursos() {

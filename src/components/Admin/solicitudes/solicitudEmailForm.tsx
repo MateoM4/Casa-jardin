@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, {useState } from 'react';
 import { X, Send, ChevronDown, ChevronUp, Wand2, Loader2 } from 'lucide-react';
 import { updateSolicitud } from '@/services/Solicitud/Solicitud';
-import { emailAceptar, emailRechazo } from '@/helpers/email/emailSolicitudes';
-import { getCursoSolicitudBySoliId } from '@/services/curso_solicitud';
 import { createAlumno_Curso } from '@/services/alumno_curso';
+import { updateCursoSolicitud } from '@/services/curso_solicitud';
+import { sendEmailCustom } from '@/helpers/sendmail';
 
 interface SolicitudEmailFormProps {
   soliAlumno: {solicitudId: number, alumno: any};
@@ -70,7 +70,7 @@ export function SolicitudEmailForm({soliAlumno, cursos, aceptar, onSubmit, onClo
         await handleAceptarSolicitud(soliAlumno.solicitudId, soliAlumno.alumno.id, selectCursosId);
       }
       else{
-        await handleRechazar(soliAlumno.solicitudId, soliAlumno.alumno.email);
+        await handleRechazar(soliAlumno.solicitudId);
       }
       onSubmit({ selectedItems, title, body });
     } catch (error) {
@@ -118,8 +118,9 @@ saludos cordiales, Casa Jardín`);
     });
   };
 
-  const handleRechazar = async (solicitudId: number, correo: string) => {
+  const handleRechazar = async (solicitudId: number) => {
     try {
+<<<<<<< HEAD
       await updateSolicitud(solicitudId, { leida: true, enEspera: true });
 <<<<<<< Updated upstream
       await emailRechazo(correo, title, body);
@@ -128,15 +129,23 @@ saludos cordiales, Casa Jardín`);
   
       const response = await sendEmailCustom(soliAlumno.alumno.email, title, body);
     
+=======
+      await updateSolicitud(solicitudId, {leida: true,});
+      const response = await sendEmailCustom(soliAlumno.alumno.email, title, body);
+      
+>>>>>>> main
       if (response.ok) {
         setSuccessMessage('La solicitud ha sido rechazada correctamente.');
       } else {
         throw new Error('Error sending email');
       }
+<<<<<<< HEAD
 
 >>>>>>> Stashed changes
+=======
+>>>>>>> main
     } catch (error) {
-      throw error;
+      console.error(error);
     } finally {
       setTimeout(() => {
         setSuccessMessage(null);
@@ -145,15 +154,26 @@ saludos cordiales, Casa Jardín`);
     }
   };
   
-  const handleAceptarSolicitud = async (solicitudId: number, idAlumno: number, cursos: number[]) => {
+  const handleAceptarSolicitud = async (solicitudId: number, idAlumno: number, cursosSeleccionados: number[]) => {
     try {
-      await updateSolicitud(solicitudId, { leida: true, enEspera: true });
-      for (let curso of cursos) {
+      await updateSolicitud(solicitudId, { leida: true,});
+      for (let curso of cursosSeleccionados) {
         await createAlumno_Curso({
           "alumnoId": idAlumno,
           "cursoId": (curso),
         });
+        //pone true a los cursos seleccionados
+        await updateCursoSolicitud(curso, { estado: true });
       }
+      
+      const response = await sendEmailCustom(soliAlumno.alumno.email, title, body);
+      
+      if (response.ok) {
+        setSuccessMessage('La solicitud ha sido aceptada correctamente.');
+      } else {
+        throw new Error('Error sending email');
+      }
+<<<<<<< HEAD
 <<<<<<< Updated upstream
       await emailAceptar(soliAlumno.alumno.email, title, body);
       setSuccessMessage('La solicitud ha sido aceptada correctamente.');
@@ -167,8 +187,10 @@ saludos cordiales, Casa Jardín`);
         throw new Error('Error sending email');
       }
 >>>>>>> Stashed changes
+=======
+>>>>>>> main
     } catch (error) {
-      throw error;
+      console.error(error);
     } finally {
       setTimeout(() => {
         setSuccessMessage(null);

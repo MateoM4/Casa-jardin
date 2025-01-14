@@ -400,7 +400,7 @@ const Cuenta: React.FC = () => {
     return (
         <main className=''>
             <Image src={Background} alt="Background" layout="fill" objectFit="cover" quality={20} priority={true} />
-            <div className="fixed bg-red-500  justify-between w-full p-4" >
+            <div className="fixed justify-between w-full z-10" >
                 <Navigate />
             </div>
 
@@ -697,8 +697,7 @@ const Cuenta: React.FC = () => {
                 </div>
             )}
             <div
-                className="fixed bottom-0 py-2 border-t w-full z-30"
-                style={{ background: "#EF4444" }}
+                className="fixed bottom-0 bg-sky-600 py-2 border-t w-full z-10"
             >
                 <But_aside />
             </div>
